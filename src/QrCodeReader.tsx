@@ -1,6 +1,5 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, SetStateAction } from "react";
 import jsQR from "jsqr";
-import { AnimatePresence, motion } from "framer-motion";
 
 import {
   CameraContainer,
@@ -12,7 +11,6 @@ import {
   QRCodeText,
   QrDetailGuideText,
   QrGuideText,
-  SwitchButton,
   Video,
   VideoAreaSection,
   VideoContainer,
@@ -21,7 +19,23 @@ import {
 import closeIcon from "./assets/icons/white-close.png";
 import changeIcon from "./assets/icons/camera-change.svg";
 
-const QRCodeReader = () => {
+interface QrReaderProps {
+  setRecognizedData: React.Dispatch<SetStateAction<string>>;
+  hasCloseAction: boolean;
+  title?: string;
+  subTitle?: string;
+  loadingText?: string;
+}
+
+//TODO: action을 리턴할 것인가, 값을 리턴할것인가...
+
+const QRCodeReader = ({
+  hasCloseAction = true,
+  setRecognizedData,
+  title = "QR 코드를 스캔해주세요",
+  subTitle = "어둡다면, 모바일 플래쉬를 켜주세요.",
+  loadingText = "카메라 띄우는 중...",
+}: QrReaderProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [qrCode, setQRCode] = useState<string | null>(null);
@@ -73,6 +87,7 @@ const QRCodeReader = () => {
       );
       if (qrCode) {
         setQRCode(qrCode);
+        setRecognizedData(qrCode);
         clearInterval(interval);
       }
     }, 1000 / 30);
@@ -98,18 +113,16 @@ const QRCodeReader = () => {
     return null;
   };
 
-//TODO: props 생성하기 (qrcode?)
-
   return (
     <Container>
       <CameraContainer>
-        <ExitCamera src={closeIcon} onClick={() => console.log("asdf")} />
+        {hasCloseAction && (
+          <ExitCamera src={closeIcon} onClick={() => console.log("asdf")} />
+        )}
         <ChangeCamera src={changeIcon} onClick={handleCameraSwitch} />
-        <LoadingText>카메라 띄우는 중...</LoadingText>
-        <QrGuideText>QR 코드를 스캔해주세요</QrGuideText>
-        <QrDetailGuideText>
-          어둡다면, 모바일 플래쉬를 켜주세요.
-        </QrDetailGuideText>
+        <LoadingText>{loadingText}</LoadingText>
+        <QrGuideText>{title}</QrGuideText>
+        <QrDetailGuideText>{subTitle}</QrDetailGuideText>
         <VideoContainer>
           <VideoAreaSection>
             <VideoViewSection>

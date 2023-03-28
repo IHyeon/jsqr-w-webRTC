@@ -134,12 +134,6 @@ export const Canvas = styled.canvas`
   display: none;
 `;
 
-export const SwitchButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-`;
-
 export const QRCodeText = styled.p`
   color: white;
   font-size: 24px;

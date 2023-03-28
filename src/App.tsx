@@ -1,10 +1,12 @@
-import QRCodeReader from './QrCodeReader';
+import { useState } from "react";
+import QRCodeReader from "./QrCodeReader";
 
 function App() {
-  
+  const [qr, setQr] = useState<string>("");
+
   return (
     <div className="App">
-      <QRCodeReader/>
+      <QRCodeReader hasCloseAction={true} setRecognizedData={setQr} />
     </div>
   );
 }
