@@ -2,30 +2,6 @@ import React, { useRef, useEffect, useState } from "react";
 import jsQR from "jsqr";
 import styled from "styled-components";
 
-const VideoWrapper = styled.div`
-  position: relative;
-  padding-top: 56.25%;
-`;
-
-const Video = styled.video`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-`;
-
-const Canvas = styled.canvas`
-  border: 1px solid black;
-  display: none;
-`;
-
-const Button = styled.button`
-  margin: 16px;
-  padding: 8px;
-  font-size: 16px;
-`;
-
 const QRCodeReader = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -40,7 +16,7 @@ const QRCodeReader = () => {
         video: {
           facingMode: isFrontFacingCamera ? "user" : "environment",
           width: { ideal: 640 },
-          height: { ideal: 480 },
+          height: { ideal: 640 },
         },
       })
       .then((stream) => {
@@ -104,15 +80,51 @@ const QRCodeReader = () => {
   };
 
   return (
-    <div style={{ maxWidth: 640, margin: "auto" }}>
-      <VideoWrapper>
+    <Container>
+      <VideoContainer>
         <Video ref={videoRef} />
-      </VideoWrapper>
-      <Canvas ref={canvasRef} width={640} height={480} />
-      {qrCode && <p>QR code content: {qrCode}</p>}
-      <Button onClick={handleCameraSwitch}>Switch Camera</Button>
-    </div>
+      </VideoContainer>
+      <Canvas ref={canvasRef} width={640} height={640} />
+      {qrCode && <QRCodeText>QR code content: {qrCode}</QRCodeText>}
+      <SwitchButton onClick={handleCameraSwitch}>Switch Camera</SwitchButton>
+    </Container>
   );
 };
+
+
+const Container = styled.div`
+  height: 100vh;
+  background-color: black;
+  margin: auto;
+`;
+
+const VideoContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+`;
+
+const Video = styled.video`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+`;
+
+const Canvas = styled.canvas`
+  border: 1px solid black;
+  display: none;
+`;
+
+const SwitchButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+`;
+
+const QRCodeText = styled.p`
+  color: white;
+  font-size: 24px;
+  text-align: center;
+`;
 
 export default QRCodeReader;
