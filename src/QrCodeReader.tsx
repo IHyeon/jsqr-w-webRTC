@@ -1,5 +1,30 @@
 import React, { useRef, useEffect, useState } from "react";
 import jsQR from "jsqr";
+import styled from "styled-components";
+
+const VideoWrapper = styled.div`
+  position: relative;
+  padding-top: 56.25%;
+`;
+
+const Video = styled.video`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+`;
+
+const Canvas = styled.canvas`
+  border: 1px solid black;
+  display: none;
+`;
+
+const Button = styled.button`
+  margin: 16px;
+  padding: 8px;
+  font-size: 16px;
+`;
 
 const QRCodeReader = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -15,13 +40,13 @@ const QRCodeReader = () => {
         video: {
           facingMode: isFrontFacingCamera ? "user" : "environment",
           width: { ideal: 640 },
-          height: { ideal: 480 }
+          height: { ideal: 480 },
         },
       })
       .then((stream) => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
-          // 비디오 스트림이 재생 준비될 때까지 대기합니다.
+          // Wait until the video stream is ready to play.
           videoRef.current.onloadedmetadata = () => {
             videoRef.current?.play();
           };
@@ -41,10 +66,10 @@ const QRCodeReader = () => {
     if (!ctx) return;
 
     const interval = setInterval(() => {
-      // 비디오 프레임을 캔버스에 그립니다.
+      // Draw the video frame to the canvas.
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // QR 코드 인식 처리
+      // QR code recognition
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const qrCode = findQRCode(
         imageData.data,
@@ -80,26 +105,12 @@ const QRCodeReader = () => {
 
   return (
     <div style={{ maxWidth: 640, margin: "auto" }}>
-      <div style={{ position: "relative", paddingTop: "56.25%" }}>
-        <video
-          ref={videoRef}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-          }}
-        />
-      </div>
-      <canvas
-        ref={canvasRef}
-        width={640}
-        height={480}
-        style={{ border: "1px solid black", display: "none" }}
-      />
+      <VideoWrapper>
+        <Video ref={videoRef} />
+      </VideoWrapper>
+      <Canvas ref={canvasRef} width={640} height={480} />
       {qrCode && <p>QR code content: {qrCode}</p>}
-      <button onClick={handleCameraSwitch}>switch</button>
+      <Button onClick={handleCameraSwitch}>Switch Camera</Button>
     </div>
   );
 };
