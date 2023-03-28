@@ -1,6 +1,25 @@
 import React, { useRef, useEffect, useState } from "react";
 import jsQR from "jsqr";
-import styled from "styled-components";
+import { AnimatePresence, motion } from "framer-motion";
+
+import {
+  CameraContainer,
+  Canvas,
+  ChangeCamera,
+  Container,
+  ExitCamera,
+  LoadingText,
+  QRCodeText,
+  QrDetailGuideText,
+  QrGuideText,
+  SwitchButton,
+  Video,
+  VideoAreaSection,
+  VideoContainer,
+  VideoViewSection,
+} from "./qr.style";
+import closeIcon from "./assets/icons/white-close.png";
+import changeIcon from "./assets/icons/camera-change.svg";
 
 const QRCodeReader = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -79,52 +98,31 @@ const QRCodeReader = () => {
     return null;
   };
 
+//TODO: props 생성하기 (qrcode?)
+
   return (
     <Container>
-      <VideoContainer>
-        <Video ref={videoRef} />
-      </VideoContainer>
-      <Canvas ref={canvasRef} width={640} height={640} />
-      {qrCode && <QRCodeText>QR code content: {qrCode}</QRCodeText>}
-      <SwitchButton onClick={handleCameraSwitch}>Switch Camera</SwitchButton>
+      <CameraContainer>
+        <ExitCamera src={closeIcon} onClick={() => console.log("asdf")} />
+        <ChangeCamera src={changeIcon} onClick={handleCameraSwitch} />
+        <LoadingText>카메라 띄우는 중...</LoadingText>
+        <QrGuideText>QR 코드를 스캔해주세요</QrGuideText>
+        <QrDetailGuideText>
+          어둡다면, 모바일 플래쉬를 켜주세요.
+        </QrDetailGuideText>
+        <VideoContainer>
+          <VideoAreaSection>
+            <VideoViewSection>
+              <div className="guide" />
+              <Video ref={videoRef} />
+            </VideoViewSection>
+          </VideoAreaSection>
+        </VideoContainer>
+        <Canvas ref={canvasRef} width={640} height={640} />
+        {qrCode && <QRCodeText>QR code content: {qrCode}</QRCodeText>}
+      </CameraContainer>
     </Container>
   );
 };
-
-
-const Container = styled.div`
-  height: 100vh;
-  background-color: black;
-  margin: auto;
-`;
-
-const VideoContainer = styled.div`
-  position: relative;
-  width: 100%;
-  height: 100%;
-`;
-
-const Video = styled.video`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-`;
-
-const Canvas = styled.canvas`
-  border: 1px solid black;
-  display: none;
-`;
-
-const SwitchButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-`;
-
-const QRCodeText = styled.p`
-  color: white;
-  font-size: 24px;
-  text-align: center;
-`;
 
 export default QRCodeReader;
