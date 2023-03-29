@@ -27,6 +27,11 @@ interface QrReaderProps {
   loadingText?: string;
 }
 
+interface CameraProps {
+  deviceId: string;
+  
+}
+
 //TODO: action을 리턴할 것인가, 값을 리턴할것인가...
 
 const QRCodeReader = ({
@@ -38,11 +43,20 @@ const QRCodeReader = ({
 }: QrReaderProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [deviceList, setDeviceList] = useState<string[]>()
   const [qrCode, setQRCode] = useState<string | null>(null);
   const [isFrontFacingCamera, setIsFrontFacingCamera] = useState(true);
 
+
+  //TODO: deviceList 뽑다 말았음 해야함
   useEffect(() => {
     if (!videoRef.current) return;
+
+    (async () => {
+      console.log((await navigator.mediaDevices.enumerateDevices()).filter(
+        (device) => device.kind === "videoinput"
+      ));
+    })();
 
     navigator.mediaDevices
       .getUserMedia({
@@ -54,6 +68,7 @@ const QRCodeReader = ({
       })
       .then((stream) => {
         if (videoRef.current) {
+          const track = stream.getVideoTracks()[0];
           videoRef.current.srcObject = stream;
           // Wait until the video stream is ready to play.
           videoRef.current.onloadedmetadata = () => {
